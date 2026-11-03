@@ -18,7 +18,7 @@ class AnalyzerPacketBoundaryTests(unittest.TestCase):
     def test_candidate_effect_and_cfg_evidence_stay_unpromoted(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = pathlib.Path(temporary)
-            binary = root / "reffector"
+            binary = root / "sidefx"
             fixture = root / "fixture"
             fixture.mkdir()
             (fixture / "go.mod").write_text(
@@ -43,7 +43,7 @@ func root(flag bool) { invoke(maybe, flag) }
             env = os.environ.copy()
             env.update({"GOPROXY": "off", "GOSUMDB": "off", "GOTOOLCHAIN": "local"})
             built = subprocess.run(
-                ["go", "build", "-o", str(binary), "./cmd/reffector"],
+                ["go", "build", "-o", str(binary), "./cmd/sidefx"],
                 cwd=REPO_ROOT, env=env, text=True, capture_output=True, timeout=120)
             self.assertEqual(built.returncode, 0, built.stderr)
 

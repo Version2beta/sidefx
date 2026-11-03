@@ -5,7 +5,7 @@ import (
 	"io"
 	"sort"
 
-	"github.com/Version2beta/reffector/internal/effects"
+	"github.com/Version2beta/sidefx/internal/effects"
 	"golang.org/x/tools/go/ssa"
 )
 

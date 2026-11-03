@@ -167,7 +167,7 @@ def select_context(
                      "deferred_by_record_type": {kind: sum(record_type_by_ref.get(ref, "unsupported") == kind for ref in deferred) for kind in sorted({record_type_by_ref.get(ref, "unsupported") for ref in deferred})}},
         "uncertainty": ["Lexical relevance is not semantic sufficiency.",
                         "Effect-free declarations remain in the source index; no recognized effect does not imply no behavior.",
-                        "Reffector relationships are not a complete call graph or runtime trace.",
+                        "Sidefx relationships are not a complete call graph or runtime trace.",
                         "Deferred and out-of-scope records were not inspected for question-specific meaning."],
     }
 

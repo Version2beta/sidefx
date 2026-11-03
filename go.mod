@@ -1,4 +1,4 @@
-module github.com/Version2beta/reffector
+module github.com/Version2beta/sidefx
 
 go 1.26.0
 

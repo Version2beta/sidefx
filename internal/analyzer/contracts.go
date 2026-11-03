@@ -7,7 +7,7 @@ import (
 
 	"golang.org/x/tools/go/ssa"
 
-	"github.com/Version2beta/reffector/internal/effects"
+	"github.com/Version2beta/sidefx/internal/effects"
 )
 
 // InterfaceContract is an opt-in inventory of implementations that satisfy one

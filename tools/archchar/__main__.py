@@ -34,10 +34,10 @@ def parser() -> argparse.ArgumentParser:
     commands = root.add_subparsers(dest="command", required=True)
 
     for name in ("prepare", "run", "import"):
-        command = commands.add_parser(name, help="analyze/import Reffector evidence and prepare bounded component packets")
+        command = commands.add_parser(name, help="analyze/import sidefx evidence and prepare bounded component packets")
         command.add_argument("repo", help="Go repository root")
         command.add_argument("--out", required=True, help="new artifact directory outside the analyzed repository")
-        command.add_argument("--reffector", help="Reffector executable; defaults to PATH lookup")
+        command.add_argument("--sidefx", help="sidefx executable; defaults to PATH lookup")
         command.add_argument("--effects", help="existing effects JSON input (import mode)")
         command.add_argument("--audit", help="existing audit JSONL input (required with --effects)")
         command.add_argument("--pattern", action="append", default=None, help="Go package pattern; repeatable, defaults to ./...")
@@ -68,7 +68,7 @@ def parser() -> argparse.ArgumentParser:
     verification.add_argument("--max-context-bytes", type=positive_integer)
     add_token_budget_arguments(verification)
 
-    paired = commands.add_parser("benchmark", help="run a paired source-only and Reffector-assisted comparison")
+    paired = commands.add_parser("benchmark", help="run a paired source-only and sidefx-assisted comparison")
     paired.add_argument("run")
     paired.add_argument("--manifest", required=True, help="pre-registered questions and deterministic rubric JSON")
     paired.add_argument("--model-command-json", help="generic model subprocess argv JSON; omit for a pending dry run")

@@ -1,4 +1,4 @@
-"""Deterministic source selection from AST/index metadata, independent of Reffector."""
+"""Deterministic source selection from AST/index metadata, independent of sidefx."""
 from __future__ import annotations
 
 import hashlib
@@ -147,7 +147,7 @@ def select_source_context(
         "not_selected_refs": sorted(str(row.get("id")) for row in declarations if row.get("id") not in candidates),
         "budget_bytes": budget_bytes,
         "selected_bytes": used,
-        "traversal": {"basis": "AST lexical symbols, package imports, exported entry points, interfaces; no Reffector graph used for shared source selection",
+        "traversal": {"basis": "AST lexical symbols, package imports, exported entry points, interfaces; no sidefx graph used for shared source selection",
                        "max_import_depth": max_import_depth,
                        "max_neighbor_declarations_per_package": max_neighbor_declarations,
                        "reached_packages": sorted(reached_packages),

@@ -224,7 +224,7 @@ class ArchcharTests(unittest.TestCase):
         values = {
             "repo": str(self.repo),
             "out": str(out),
-            "reffector": "missing-reffector-for-import",
+            "sidefx": "missing-sidefx-for-import",
             "effects": str(self.effects_path),
             "audit": str(self.audit_path),
             "pattern": ["./..."],
@@ -379,7 +379,7 @@ class ArchcharTests(unittest.TestCase):
         self.assertEqual(claim_evidence_issues(claim, index_evidence(self.base / "concurrency-domain-run"), self.repo, manifest), [])
 
     def test_prepare_commands_are_offline_and_audit_gets_no_graph_caps(self) -> None:
-        fake_binary = self.base / "fake-reffector"
+        fake_binary = self.base / "fake-sidefx"
         fake_binary.write_text("not executed while subprocess is patched\n", encoding="utf-8")
         fake_binary.chmod(0o700)
         output = self.base / "command-run"
@@ -407,7 +407,7 @@ class ArchcharTests(unittest.TestCase):
 
         args = self.args(
             output,
-            reffector=str(fake_binary),
+            sidefx=str(fake_binary),
             effects=None,
             audit=None,
             pattern=["./...", "./internal/..."],

@@ -11,7 +11,7 @@ import (
 
 	"golang.org/x/tools/go/ssa"
 
-	"github.com/Version2beta/reffector/internal/effects"
+	"github.com/Version2beta/sidefx/internal/effects"
 )
 
 // Details is opt-in. Sites occur once, at their origin, not once per caller.

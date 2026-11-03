@@ -8,7 +8,7 @@ import (
 
 	"golang.org/x/tools/go/ssa"
 
-	"github.com/Version2beta/reffector/internal/effects"
+	"github.com/Version2beta/sidefx/internal/effects"
 )
 
 func appendUnique(values []string, value string) []string {

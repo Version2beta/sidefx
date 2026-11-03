@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/Version2beta/reffector/internal/analyzer"
+	"github.com/Version2beta/sidefx/internal/analyzer"
 )
 
 // WriteReport emits the separate detailed schema, never changes Record.

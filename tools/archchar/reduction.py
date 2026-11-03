@@ -173,7 +173,7 @@ def build_evidence_index(
             "caller_package": edge.get("caller_package"), "callee_package": edge.get("callee_package"),
             "file": edge.get("file"), "location": edge.get("location"), "kind": edge.get("kind"),
             "resolution": edge.get("resolution"), "candidate": edge.get("candidate", False),
-            "synthetic": edge.get("synthetic", False), "provenance": "Reffector effect-site reverse evidence; not a complete call graph",
+            "synthetic": edge.get("synthetic", False), "provenance": "sidefx effect-site reverse evidence; not a complete call graph",
             "raw_ref": f"raw-effects.json#/edges/{ordinal - 1}",
         }
         aliases = [edge["id"]]
@@ -227,7 +227,7 @@ def build_evidence_index(
         "records": records,
         "coverage": effects.get("coverage", {}),
         "truncated": effects.get("truncated", {}),
-        "scope": "normalized evidence references the preserved raw Reffector exports; edges are effect-site reverse evidence, not a complete call graph",
+        "scope": "normalized evidence references the preserved raw sidefx exports; edges are effect-site reverse evidence, not a complete call graph",
     }
 
 
@@ -417,7 +417,7 @@ def program_for_package(program_model: dict[str, Any], package_id: str, files: l
         "declarations": [item for item in declarations if item.get("file") in selected],
         "symbol_directory": symbol_directory,
         "cross_component_relationships": related,
-        "relationship_scope": "Only Reffector effect-site reverse relationships and Go package imports are represented; this is not a complete call graph or runtime trace.",
+        "relationship_scope": "Only sidefx effect-site reverse relationships and Go package imports are represented; this is not a complete call graph or runtime trace.",
     }
 
 

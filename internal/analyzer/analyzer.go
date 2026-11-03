@@ -16,7 +16,7 @@ import (
 	"golang.org/x/tools/go/ssa"
 	"golang.org/x/tools/go/ssa/ssautil"
 
-	"github.com/Version2beta/reffector/internal/effects"
+	"github.com/Version2beta/sidefx/internal/effects"
 )
 
 type Options struct {
@@ -164,7 +164,7 @@ func AnalyzeReport(patterns []string, opts Options) (Report, error) {
 		detailed: opts.Details || opts.EffectView || opts.AuditUnresolved || opts.ArgumentProvenance || opts.ControlFlow, audit: opts.AuditUnresolved, packageIDs: make(map[*types.Package]string), sites: make(map[string]*Site), edges: make(map[string]CallEdge), fileKeys: make(map[string]string), siteNodes: make(map[string]map[*node]bool), siteKinds: make(map[string]string), candidates: make(map[ssa.CallInstruction][]*ssa.Function), contracts: make(map[string]*interfaceContract)}
 
 	// Module metadata, rather than import-path spelling, identifies standard
-	// packages. A loaded package with a module (including module "reffector")
+	// packages. A loaded package with a module (including module "sidefx")
 	// is application or third-party code even when its path contains no dot.
 	packages.Visit(pkgs, nil, func(p *packages.Package) {
 		if p.Types != nil {

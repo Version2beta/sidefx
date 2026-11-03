@@ -1,17 +1,17 @@
-# reffector
+# sidefx
 
-`reffector` starts an investigation with **effect category → distinct direct
+`sidefx` starts an investigation with **effect category → distinct direct
 operation site → reverse callers**. It statically reports possible effects in Go
 without executing functions, initializers or tests, or modifying analyzed source.
 
 ```sh
-go install github.com/Version2beta/reffector/cmd/reffector@latest
-reffector ./...
-reffector -effect fs.write -max-depth 2 ./internal
-reffector -api os.ReadFile -json ./internal
-reffector -view functions -tests -json example.com/project/billing
-reffector skill install
-man "$PWD/man/man1/reffector.1"
+go install github.com/Version2beta/sidefx/cmd/sidefx@latest
+sidefx ./...
+sidefx -effect fs.write -max-depth 2 ./internal
+sidefx -api os.ReadFile -json ./internal
+sidefx -view functions -tests -json example.com/project/billing
+sidefx skill install
+man "$PWD/man/man1/sidefx.1"
 ```
 
 It requires Go 1.26+ and the Go toolchain on `PATH`. Package patterns use
@@ -25,25 +25,25 @@ and external test-file functions.
 
 ## Optional agent skill
 
-The canonical [`skills/reffector/SKILL.md`](skills/reffector/SKILL.md) is a short,
+The canonical [`skills/sidefx/SKILL.md`](skills/sidefx/SKILL.md) is a short,
 task-neutral guide to retrieving effect sites, reverse callers and uncertainty.
 For one Pi session without installation or settings changes, use
-`pi --no-skills --skill /absolute/path/to/reffector/skills/reffector/SKILL.md`,
-then `/skill:reffector` with your question and package scope.
+`pi --no-skills --skill /absolute/path/to/sidefx/skills/sidefx/SKILL.md`,
+then `/skill:sidefx` with your question and package scope.
 
-Optionally, `reffector skill install` installs the bundled skill at
-`~/.agents/skills/reffector/SKILL.md`, a location Pi also discovers. Rebuild the
+Optionally, `sidefx skill install` installs the bundled skill at
+`~/.agents/skills/sidefx/SKILL.md`, a location Pi also discovers. Rebuild the
 CLI from the current checkout before installing an updated skill. The skill
 does not add analyzer subcommands or require a refactoring workflow; the
 analyzer remains fully useful without it. The verification commands below cover
 build, test, and static analysis for the release tree.
 
-Repeated installation updates a copy previously installed by reffector. A
+Repeated installation updates a copy previously installed by sidefx. A
 pre-existing or locally modified skill is refused rather than overwritten.
 
 ## Investigate independent responsibilities
 
-1. Start with `reffector -max-depth 0 ./billing` to discover effect groups and
+1. Start with `sidefx -max-depth 0 ./billing` to discover effect groups and
    independent operation sites. Pick a category, then an exact API or site.
 2. Expand reverse callers with `-effect fs.write -max-depth 3` or `-site ID`.
    Multiple callers of one helper share one operation; independent calls remain
@@ -121,7 +121,7 @@ expansion through loaded dependency bodies. VTA relationships remain
 possible effects are also evaluated per selected source root. For interface
 calls, concrete receiver types proven through direct calls and parameter
 forwarding can exclude incompatible candidate implementations for that root.
-Open parameters and flows Reffector cannot resolve (such as memory loads,
+Open parameters and flows sidefx cannot resolve (such as memory loads,
 returns, and closure captures) retain all VTA candidates, and the unresolved
 interface site remains. This is a bounded refinement, not generally
 context-sensitive call resolution; the global candidate relationship remains
@@ -147,8 +147,8 @@ leads or filter the unfiltered inventory and contract-implementation summaries.
 ## Unresolved-operation audit inventory
 
 ```sh
-reffector -audit-unresolved -stats ./... > unresolved.jsonl
-reffector -audit-unresolved -audit-include-known -all -stats ./... > audit.jsonl
+sidefx -audit-unresolved -stats ./... > unresolved.jsonl
+sidefx -audit-unresolved -audit-include-known -all -stats ./... > audit.jsonl
 ```
 
 This opt-in JSON Lines projection uses the **same** SSA graph, summaries and VTA
@@ -204,14 +204,14 @@ without audit mode is also an error. Existing effect and function views are unch
 ## Effect JSON, source provenance and queries
 
 ```sh
-reffector -json -function '=Top' -effect fs.read .
-reffector -api os.ReadFile -max-depth 4 -max-edges 100 ./internal
-reffector -site 'site:<ID copied from output>' -max-depth 2 ./internal
-reffector -unresolved -max-depth 1 ./internal
-reffector -unresolved -reason interface_dispatch -operation ').Save' ./internal
-reffector -all -json -effect fs.read .
-reffector -view functions -all -json .
-reffector -details -function '=Top' -max-paths 100 .
+sidefx -json -function '=Top' -effect fs.read .
+sidefx -api os.ReadFile -max-depth 4 -max-edges 100 ./internal
+sidefx -site 'site:<ID copied from output>' -max-depth 2 ./internal
+sidefx -unresolved -max-depth 1 ./internal
+sidefx -unresolved -reason interface_dispatch -operation ').Save' ./internal
+sidefx -all -json -effect fs.read .
+sidefx -view functions -all -json .
+sidefx -details -function '=Top' -max-paths 100 .
 ```
 
 The versioned effect JSON object (`schema_version: 1`) contains:
@@ -246,9 +246,9 @@ separate. An open boundary in any variant remains open.
 
 ### Architectural characterization harness
 
-Run `python3 -B -m tools.archchar prepare REPO --out DIR [--reffector PATH]`
+Run `python3 -B -m tools.archchar prepare REPO --out DIR [--sidefx PATH]`
 with repeatable `--pattern` options (default `./...`) to create offline
-Reffector/source evidence packets and a Go AST structural index. Token-aware
+sidefx/source evidence packets and a Go AST structural index. Token-aware
 preparation can use a count-only command to partition oversized packages by
 source declarations without dropping evidence. Import saved evidence with
 `--effects FILE --audit FILE`. The resumable phases are `investigate`,

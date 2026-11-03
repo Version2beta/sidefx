@@ -28,7 +28,7 @@ func Install(cfg Config) (Result, error) {
 	}
 	dir := filepath.Join(cfg.Home, ".agents", "skills", cfg.Name)
 	path := filepath.Join(dir, "SKILL.md")
-	statePath := filepath.Join(dir, ".reffector-sha256")
+	statePath := filepath.Join(dir, ".sidefx-sha256")
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return Result{Path: path}, fmt.Errorf("create skill directory: %w", err)
 	}

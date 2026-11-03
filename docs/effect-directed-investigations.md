@@ -2,7 +2,7 @@
 
 ## Current increment
 
-The local tool `tools/effect_investigation/investigate.py` consumes Reffector EffectReport v1, optional audit JSONL, optional argument-provenance/control-flow projections, and optional source-manifest/program-model JSON. It deterministically identifies review leads, reduces reverse call graphs, and emits bounded JSON and Markdown packets. The opt-in Go SSA projections are separately versioned structural evidence; they do not change effect recognition or classification. The core packet-building command makes no provider call.
+The local tool `tools/effect_investigation/investigate.py` consumes sidefx EffectReport v1, optional audit JSONL, optional argument-provenance/control-flow projections, and optional source-manifest/program-model JSON. It deterministically identifies review leads, reduces reverse call graphs, and emits bounded JSON and Markdown packets. The opt-in Go SSA projections are separately versioned structural evidence; they do not change effect recognition or classification. The core packet-building command makes no provider call.
 
 ```sh
 python3 tools/effect_investigation/investigate.py effects.json \

@@ -1,3 +1,3 @@
-module reffector/archchar/structure
+module sidefx/archchar/structure
 
 go 1.23

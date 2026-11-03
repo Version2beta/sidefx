@@ -1,4 +1,4 @@
-"""Offline, resumable architecture characterization using Reffector evidence."""
+"""Offline, resumable architecture characterization using sidefx evidence."""
 from __future__ import annotations
 
 import hashlib
@@ -33,10 +33,10 @@ GO_PASSTHROUGH_ENV = {
 CATEGORIES = {"established", "possible", "inferred", "unknown"}
 DOMAINS = {"architecture", "relationship", "effect", "runtime", "concurrency"}
 SENSITIVE_NAME = re.compile(r"(?i)(api[-_]?key|token|secret|password|authorization|credential|private[-_]?key|bearer)")
-COMPONENT_PROMPT = """Interpret the supplied current source and deterministic program/evidence indexes; do not repeat mechanically derivable inventories. Return one JSON object with claims and optional need_sources (repo-relative files) and need_evidence (available evidence references). Each claim has id, statement, category (established|possible|inferred|unknown), domain (architecture|relationship|effect|runtime|concurrency), and evidence. Explain component responsibilities, exposed contracts, interfaces, invariants, state ownership, concurrency/lifecycle responsibilities, and cross-component boundaries. Source evidence is {kind: source, file, line, quote}; Reffector evidence is {kind: reffector, id, field?}. Source fragments can begin mid-file; cite original one-based source lines using line_start/line_end, not fragment-relative lines. Cite exact source locations and stable Reffector IDs. Read source for pure transformations, business rules, and control flow; no recognized effect does not prove no behavior. Keep candidate and possible evidence possible-only. Static call reachability does not establish runtime execution, completion, or success. Do not infer a complete call graph from effect-site reverse evidence. State coverage, omissions, and unresolved behavior. Request additional selected source or indexed evidence when needed; do not guess."""
+COMPONENT_PROMPT = """Interpret the supplied current source and deterministic program/evidence indexes; do not repeat mechanically derivable inventories. Return one JSON object with claims and optional need_sources (repo-relative files) and need_evidence (available evidence references). Each claim has id, statement, category (established|possible|inferred|unknown), domain (architecture|relationship|effect|runtime|concurrency), and evidence. Explain component responsibilities, exposed contracts, interfaces, invariants, state ownership, concurrency/lifecycle responsibilities, and cross-component boundaries. Source evidence is {kind: source, file, line, quote}; Sidefx evidence uses {kind: reffector, id, field?}. Source fragments can begin mid-file; cite original one-based source lines using line_start/line_end, not fragment-relative lines. Cite exact source locations and stable sidefx IDs. Read source for pure transformations, business rules, and control flow; no recognized effect does not prove no behavior. Keep candidate and possible evidence possible-only. Static call reachability does not establish runtime execution, completion, or success. Do not infer a complete call graph from effect-site reverse evidence. State coverage, omissions, and unresolved behavior. Request additional selected source or indexed evidence when needed; do not guess."""
 AGGREGATE_PROMPT = """Synthesize supplied child claims into concise component/package/namespace characterizations; do not concatenate descriptions. Return claims with id, statement, category, domain, evidence, and child_claim_ids. Preserve responsibilities, interfaces, dependencies, cross-unit relationships, effects, concurrency, state/resource obligations, conflicts, and uncertainty. Do not strengthen a claim beyond cited children. Candidate or possible-only evidence must not become established. Static call reachability is not runtime execution. Do not invent source facts or imply the effect-site reverse graph is complete."""
-VERIFY_PROMPT = """First rely on deterministic source, structure, and Reffector checks. Assess only semantic assertions that those checks cannot decide, using the cited source excerpts and indexed records. Return verdicts {claim_id, verdict: supported|unsupported|uncertain, reason}. Do not certify claims that contradict established static evidence. Candidate edges and possible_effects remain possible-only; static evidence cannot establish runtime execution. A source citation proves only the cited text, not a broader guarantee."""
-BENCHMARK_PROMPT = """Characterize architecture from the supplied source excerpts and deterministic source/evidence indexes. Interpret responsibilities, contracts, interfaces, invariants, cross-component relationships, effects, concurrency/lifecycle obligations, and uncertainty; do not repeat deterministic inventories. Pure transformations and control flow may be important even without recognized effects. Return claims with id, statement, category (established|possible|inferred|unknown), domain (architecture|relationship|effect|runtime|concurrency), and evidence. Cite exact source lines and stable Reffector IDs. Keep candidate/possible evidence possible-only; static reachability does not prove runtime execution. State coverage, omissions, and unresolved behavior. This request may contain focused source excerpts rather than complete files; available_source_inventory and source_retrieval_catalog identify hash-bound material that can be requested by need_sources or need_source_refs. Treatment may additionally request stable canonical evidence IDs in need_evidence; source-only must not request Reffector evidence. Retrieval is bounded and each response is analyzed in a fresh context. Do not assume omitted source or graph edges are absent."""
+VERIFY_PROMPT = """First rely on deterministic source, structure, and sidefx checks. Assess only semantic assertions that those checks cannot decide, using the cited source excerpts and indexed records. Return verdicts {claim_id, verdict: supported|unsupported|uncertain, reason}. Do not certify claims that contradict established static evidence. Candidate edges and possible_effects remain possible-only; static evidence cannot establish runtime execution. A source citation proves only the cited text, not a broader guarantee."""
+BENCHMARK_PROMPT = """Characterize architecture from the supplied source excerpts and deterministic source/evidence indexes. Interpret responsibilities, contracts, interfaces, invariants, cross-component relationships, effects, concurrency/lifecycle obligations, and uncertainty; do not repeat deterministic inventories. Pure transformations and control flow may be important even without recognized effects. Return claims with id, statement, category (established|possible|inferred|unknown), domain (architecture|relationship|effect|runtime|concurrency), and evidence. Cite exact source lines and stable sidefx IDs. Keep candidate/possible evidence possible-only; static reachability does not prove runtime execution. State coverage, omissions, and unresolved behavior. This request may contain focused source excerpts rather than complete files; available_source_inventory and source_retrieval_catalog identify hash-bound material that can be requested by need_sources or need_source_refs. Treatment may additionally request stable canonical evidence IDs in need_evidence; source-only must not request sidefx evidence. Retrieval is bounded and each response is analyzed in a fresh context. Do not assume omitted source or graph edges are absent."""
 
 
 class ArchcharError(Exception):
@@ -444,7 +444,7 @@ def build_program_model(
         "declarations": declarations,
         "packages": packages,
         "cross_component_relationships": relationship_rows,
-        "relationship_scope": "Go package imports are exact; Reffector relationships are effect-site reverse evidence, not a complete call graph.",
+        "relationship_scope": "Go package imports are exact; sidefx relationships are effect-site reverse evidence, not a complete call graph.",
     }
 
 
@@ -620,17 +620,17 @@ def prepare(args: Any) -> pathlib.Path:
         "phases": {},
         "errors": [],
     }
-    reffector_arg = args.reffector or "reffector"
-    reffector_path = shutil.which(reffector_arg) or (str(pathlib.Path(reffector_arg).resolve()) if pathlib.Path(reffector_arg).exists() else None)
-    if not reffector_path:
+    sidefx_arg = args.sidefx or "sidefx"
+    sidefx_path = shutil.which(sidefx_arg) or (str(pathlib.Path(sidefx_arg).resolve()) if pathlib.Path(sidefx_arg).exists() else None)
+    if not sidefx_path:
         if not getattr(args, "effects", None):
-            metadata["errors"].append("reffector executable was not found")
-        reffector_path = reffector_arg
+            metadata["errors"].append("sidefx executable was not found")
+        sidefx_path = sidefx_arg
     else:
         try:
-            metadata["reffector"] = {"path": reffector_path, "sha256": digest(pathlib.Path(reffector_path).read_bytes())}
+            metadata["reffector"] = {"path": sidefx_path, "sha256": digest(pathlib.Path(sidefx_path).read_bytes())}
         except OSError:
-            metadata["reffector"] = {"path": reffector_path, "sha256": None}
+            metadata["reffector"] = {"path": sidefx_path, "sha256": None}
 
     effect_raw_path = output / "raw-effects.json"
     audit_raw_path = output / "raw-audit.jsonl"
@@ -640,13 +640,13 @@ def prepare(args: Any) -> pathlib.Path:
         effect_raw_path.write_bytes(effect_bytes)
         metadata["phases"]["effects"] = {"status": "imported", "source": str(pathlib.Path(args.effects).resolve()), "sha256": digest(effect_bytes)}
     else:
-        argv = [reffector_path, "-all", "-json", "-max-sites", str(args.max_sites), "-max-edges", str(args.max_edges), "-max-depth", str(args.max_depth), *patterns]
+        argv = [sidefx_path, "-all", "-json", "-max-sites", str(args.max_sites), "-max-edges", str(args.max_edges), "-max-depth", str(args.max_depth), *patterns]
         result = run_process(argv, repo, env, timeout=600)
         effect_raw_path.write_bytes(result["stdout"])
         (output / "raw-effects.stderr").write_bytes(result["stderr"])
         metadata["phases"]["effects"] = command_phase_metadata(argv, result, "raw-effects.json", "raw-effects.stderr")
         if result["returncode"] != 0:
-            errors.append("Reffector effects command failed")
+            errors.append("sidefx effects command failed")
 
     if getattr(args, "audit", None):
         audit_bytes = pathlib.Path(args.audit).read_bytes()
@@ -654,13 +654,13 @@ def prepare(args: Any) -> pathlib.Path:
         metadata["phases"]["audit"] = {"status": "imported", "source": str(pathlib.Path(args.audit).resolve()), "sha256": digest(audit_bytes)}
     elif not getattr(args, "effects", None):
         # Audit mode rejects graph-limit flags; only the documented audit flags are passed.
-        argv = [reffector_path, "-audit-unresolved", "-audit-include-known", "-all", "-stats", *patterns]
+        argv = [sidefx_path, "-audit-unresolved", "-audit-include-known", "-all", "-stats", *patterns]
         result = run_process(argv, repo, env, timeout=600)
         audit_raw_path.write_bytes(result["stdout"])
         (output / "raw-audit.stderr").write_bytes(result["stderr"])
         metadata["phases"]["audit"] = command_phase_metadata(argv, result, "raw-audit.jsonl", "raw-audit.stderr")
         if result["returncode"] != 0:
-            errors.append("Reffector audit command failed")
+            errors.append("sidefx audit command failed")
     else:
         audit_raw_path.write_bytes(b"")
         metadata["phases"]["audit"] = {"status": "missing", "reason": "an audit export was not supplied"}
@@ -846,7 +846,7 @@ def prepare(args: Any) -> pathlib.Path:
         for site_id in refs:
             groups_by_site[site_id].append(group)
 
-    # Package dependencies plus Reffector's effect-site reverse relationships are
+    # Package dependencies plus sidefx effect-site reverse relationships are
     # kept separate; neither is represented as a complete source call graph.
     relationship_inventory = {
         "scope": "package imports and effect-site reverse evidence only; not a complete call graph",
@@ -878,12 +878,12 @@ def prepare(args: Any) -> pathlib.Path:
     write_json(output / "inventory.json", inventory)
 
     if truncation_present(inventory["truncated"]):
-        errors.append("Reffector effects report is truncated")
+        errors.append("sidefx effects report is truncated")
     if effect_coverage.get("omitted", 0):
-        errors.append("Reffector omitted selected source functions")
+        errors.append("sidefx omitted selected source functions")
     if any(item["reason"] == "outside selected source files" for item in unmatched):
         # Dependency/source references are retained explicitly, not treated as absent.
-        metadata["scope_notes"] = ["Some Reffector evidence refers outside the selected repository source files; see relationships.json."]
+        metadata["scope_notes"] = ["Some sidefx evidence refers outside the selected repository source files; see relationships.json."]
     metadata["source_manifest_sha256"] = digest(canonical_json(source_files))
     program_model: dict[str, Any] = {
         "schema_version": SCHEMA_VERSION, "revision": metadata["revision"],
@@ -1256,7 +1256,7 @@ def build_request(
             "graph_scope": "effect-site reverse evidence plus package imports; not a complete call graph",
         },
         "questions": [
-            "Describe this unit's responsibilities and important relationships, citing exact source and Reffector evidence.",
+            "Describe this unit's responsibilities and important relationships, citing exact source and sidefx evidence.",
             "Separate established static evidence, candidates, inference, and unresolved boundaries; do not claim runtime execution from static reachability.",
         ],
         "allowed_source_package": package_id,
@@ -2062,18 +2062,18 @@ def claim_evidence_issues(claim: dict[str, Any], evidence_index: dict[str, dict[
             evidence_id = ref.get("id")
             entry = evidence_index.get(evidence_id) if isinstance(evidence_id, str) else None
             if not entry:
-                issues.append(f"unknown Reffector evidence ID: {evidence_id}")
+                issues.append(f"unknown sidefx evidence ID: {evidence_id}")
             else:
                 referenced.append(entry)
                 field = ref.get("field")
                 if field not in (None, "effects", "possible_effects", "resolution", "uncertainty_reasons", "candidate_ids", "candidate_records", "source_ref", "provenance"):
-                    issues.append(f"unsupported Reffector evidence field: {field}")
+                    issues.append(f"unsupported sidefx evidence field: {field}")
         else:
             issues.append(f"unsupported evidence kind: {kind}")
     statement = claim.get("statement", "").lower()
     domain = claim.get("domain")
     if domain == "runtime" or claim.get("runtime") is True:
-        issues.append("static source/Reffector evidence cannot establish runtime execution")
+        issues.append("static source/sidefx evidence cannot establish runtime execution")
     if domain == "effect" and claim.get("category") == "established":
         established_effect_refs = []
         candidate_edge_refs = []
@@ -2480,7 +2480,7 @@ def load_manifest(path: str | pathlib.Path) -> dict[str, Any]:
                     record_types = option.get("record_types")
                     allowed_types = {"sites", "audit_site", "edges", "nodes", "groups"}
                     if not isinstance(record_types, list) or not record_types or not all(isinstance(item, str) and item in allowed_types for item in record_types):
-                        raise ArchcharError(f"rubric fact {fact['id']} has invalid Reffector citation record types")
+                        raise ArchcharError(f"rubric fact {fact['id']} has invalid sidefx citation record types")
                 else:
                     raise ArchcharError(f"rubric fact {fact['id']} citation kind must be source or reffector")
     if "patterns" in manifest and (not isinstance(manifest["patterns"], list) or not all(isinstance(item, str) and item for item in manifest["patterns"])):
@@ -2968,9 +2968,9 @@ def benchmark(
     if metadata.get("status") != "complete":
         scope_mismatches.append("prepared analysis is partial")
     if truncation_present(inventory.get("truncated")) or inventory.get("coverage", {}).get("omitted", 0):
-        scope_mismatches.append("prepared Reffector evidence is truncated or omitted")
+        scope_mismatches.append("prepared sidefx evidence is truncated or omitted")
     if metadata.get("evidence_scope", {}).get("status") != "matched":
-        scope_mismatches.append("Reffector package scope does not match selected source packages")
+        scope_mismatches.append("sidefx package scope does not match selected source packages")
     if not patterns_match:
         scope_mismatches.append("prepared Go package patterns differ from benchmark manifest")
     if not revision_match:
@@ -2982,7 +2982,7 @@ def benchmark(
         if expected is not None and expected != actual:
             scope_mismatches.append(f"{field} expected {expected}, observed {actual}")
     # Source inventory and hashes stay complete externally; model-facing excerpts
-    # are selected from AST declarations without consulting Reffector evidence.
+    # are selected from AST declarations without consulting sidefx evidence.
     source_structure = read_json(run / "program-structure.json") if (run / "program-structure.json").exists() else {}
     source_model = read_json(run / "program-model.json") if (run / "program-model.json").exists() else source_structure
     selected_packages = {package["id"] for package in inventory.get("packages", [])}
@@ -3010,7 +3010,7 @@ def benchmark(
             "imports": sorted({(item.get("package"), imported) for item in selected_file_rows
                                for imported in item.get("imports", []) if isinstance(imported, str)}),
             "count": sum(len(item.get("imports", [])) for item in selected_file_rows),
-            "scope": "source-derived Go imports only; Reffector call/effect relationships are excluded",
+            "scope": "source-derived Go imports only; sidefx call/effect relationships are excluded",
         },
         "source_coverage": {"files": len(sources), "bytes": source_bytes, "lines": source_lines,
                             "registered_files": len(source_manifest), "deduplicated_paths": True,
@@ -3533,7 +3533,7 @@ def benchmark(
         "rubric": manifest["rubric"],
         "scoring_limits": [
             "Lexical required-fact matching is coverage evidence, not semantic accuracy.",
-            "Citation checks validate source line/hash and Reffector IDs/confidence, not all claim meaning.",
+            "Citation checks validate source line/hash and sidefx IDs/confidence, not all claim meaning.",
         ],
     }
     write_json(run / "benchmark.json", result)

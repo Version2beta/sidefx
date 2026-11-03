@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build deterministic, bounded investigation packets from Reffector JSON."""
+"""Build deterministic, bounded investigation packets from sidefx JSON."""
 from __future__ import annotations
 
 import argparse

@@ -7,7 +7,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/Version2beta/reffector/internal/analyzer"
+	"github.com/Version2beta/sidefx/internal/analyzer"
 )
 
 // WriteEffects defines each site once. Groups and reverse relationships refer

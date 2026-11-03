@@ -1,6 +1,6 @@
 # Third-party notices
 
-The current Reffector command dependency graph includes the following Go
+The current sidefx command dependency graph includes the following Go
 modules. The versions are recorded in `go.mod` and `go.sum`.
 
 | Module | Version | License |
@@ -43,6 +43,6 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-This inventory covers the modules in the current Reffector dependency graph
-for `./cmd/reffector`; it is not a legal clearance or a review of unrelated
+This inventory covers the modules in the current sidefx dependency graph
+for `./cmd/sidefx`; it is not a legal clearance or a review of unrelated
 local experiment repositories.

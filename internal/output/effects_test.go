@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Version2beta/reffector/internal/analyzer"
+	"github.com/Version2beta/sidefx/internal/analyzer"
 )
 
 func TestCategoryReferencesIdentifyOperationsWithoutFollowingIDs(t *testing.T) {

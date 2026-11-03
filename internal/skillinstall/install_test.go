@@ -8,9 +8,12 @@ import (
 
 func TestInstallCreatesAndUpdatesManagedSkill(t *testing.T) {
 	home := t.TempDir()
-	first, err := Install(Config{Home: home, Name: "reffector", Content: []byte("first\n")})
+	first, err := Install(Config{Home: home, Name: "sidefx", Content: []byte("first\n")})
 	if err != nil || !first.Updated {
 		t.Fatalf("first install: %+v, %v", first, err)
+	}
+	if _, err := os.Stat(filepath.Join(filepath.Dir(first.Path), ".sidefx-sha256")); err != nil {
+		t.Fatalf("sidefx ownership marker: %v", err)
 	}
 	data, err := os.ReadFile(first.Path)
 	if err != nil || string(data) != "first\n" {
@@ -19,7 +22,7 @@ func TestInstallCreatesAndUpdatesManagedSkill(t *testing.T) {
 	if mode, err := os.Stat(first.Path); err != nil || mode.Mode().Perm() != 0644 {
 		t.Fatalf("skill permissions: %v, %v", mode, err)
 	}
-	second, err := Install(Config{Home: home, Name: "reffector", Content: []byte("second\n")})
+	second, err := Install(Config{Home: home, Name: "sidefx", Content: []byte("second\n")})
 	if err != nil || !second.Updated {
 		t.Fatalf("update: %+v, %v", second, err)
 	}
@@ -27,7 +30,7 @@ func TestInstallCreatesAndUpdatesManagedSkill(t *testing.T) {
 	if string(data) != "second\n" {
 		t.Fatalf("updated content: %q", data)
 	}
-	third, err := Install(Config{Home: home, Name: "reffector", Content: []byte("second\n")})
+	third, err := Install(Config{Home: home, Name: "sidefx", Content: []byte("second\n")})
 	if err != nil || third.Updated {
 		t.Fatalf("repeat install: %+v, %v", third, err)
 	}
@@ -35,14 +38,14 @@ func TestInstallCreatesAndUpdatesManagedSkill(t *testing.T) {
 
 func TestInstallRefusesUnmanagedOrModifiedSkill(t *testing.T) {
 	home := t.TempDir()
-	path := filepath.Join(home, ".agents", "skills", "reffector", "SKILL.md")
+	path := filepath.Join(home, ".agents", "skills", "sidefx", "SKILL.md")
 	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
 		t.Fatal(err)
 	}
 	if err := os.WriteFile(path, []byte("custom\n"), 0644); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := Install(Config{Home: home, Name: "reffector", Content: []byte("canonical\n")}); err == nil {
+	if _, err := Install(Config{Home: home, Name: "sidefx", Content: []byte("canonical\n")}); err == nil {
 		t.Fatal("unmanaged skill was overwritten")
 	}
 	data, _ := os.ReadFile(path)
@@ -53,14 +56,14 @@ func TestInstallRefusesUnmanagedOrModifiedSkill(t *testing.T) {
 
 func TestInstallReportsWriteFailure(t *testing.T) {
 	home := t.TempDir()
-	path := filepath.Join(home, ".agents", "skills", "reffector")
+	path := filepath.Join(home, ".agents", "skills", "sidefx")
 	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
 		t.Fatal(err)
 	}
 	if err := os.WriteFile(path, []byte("not a directory"), 0644); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := Install(Config{Home: home, Name: "reffector", Content: []byte("skill\n")}); err == nil {
+	if _, err := Install(Config{Home: home, Name: "sidefx", Content: []byte("skill\n")}); err == nil {
 		t.Fatal("expected installation failure")
 	}
 }

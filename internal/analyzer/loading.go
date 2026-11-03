@@ -71,7 +71,7 @@ func loadConfig(opts Options) (*packages.Config, func(), error) {
 		}
 	}
 	work.Cleanup()
-	tmp, err := os.MkdirTemp("", "reffector-work-*")
+	tmp, err := os.MkdirTemp("", "sidefx-work-*")
 	if err != nil {
 		return nil, nil, err
 	}
