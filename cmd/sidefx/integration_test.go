@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
+	"runtime"
 	"sort"
 	"strings"
 	"testing"
@@ -32,7 +33,11 @@ func TestMain(m *testing.M) {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-	executable = filepath.Join(tmp, "sidefx")
+	suffix := ""
+	if runtime.GOOS == "windows" {
+		suffix = ".exe"
+	}
+	executable = filepath.Join(tmp, "sidefx"+suffix)
 	fixtureSource, _ = filepath.Abs("../../testdata/fixture")
 	concurrencySource, _ = filepath.Abs("../../testdata/concurrency")
 	effectContractsSource, _ = filepath.Abs("../../testdata/effect-contracts")
@@ -394,7 +399,7 @@ func TestSkillInstallCLI(t *testing.T) {
 
 func TestCanonicalModulePath(t *testing.T) {
 	data, err := os.ReadFile("../../go.mod")
-	if err != nil || !strings.HasPrefix(string(data), "module github.com/Version2beta/sidefx\n") {
+	if err != nil || !strings.HasPrefix(strings.ReplaceAll(string(data), "\r\n", "\n"), "module github.com/Version2beta/sidefx\n") {
 		t.Fatalf("module path: %q, %v", data, err)
 	}
 }

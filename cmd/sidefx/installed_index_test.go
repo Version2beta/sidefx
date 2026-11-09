@@ -2,8 +2,10 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"crypto/sha256"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -14,6 +16,7 @@ import (
 	"slices"
 	"strings"
 	"testing"
+	"time"
 
 	sidefxskill "github.com/Version2beta/sidefx/skills/sidefx"
 )
@@ -99,6 +102,16 @@ func Contract(r io.Reader){_,_=r.Read(nil)}
 		t.Helper()
 		out, diag, status := call(args...)
 		if status != 0 {
+			if strings.Contains(string(diag), "Go toolchain unavailable:") {
+				// Re-probe the same command in the same isolated cwd/environment;
+				// do not guess a toolchain fix or replace the original CLI failure.
+				ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+				probe := exec.CommandContext(ctx, goCopy, "env", "-json", "GOVERSION", "GOOS", "GOARCH", "CGO_ENABLED", "GOFLAGS", "GOWORK")
+				probe.Dir, probe.Env = dir, env
+				diagnostic, _ := installedGoProbeDiagnostic(probe)
+				cancel()
+				t.Log(diagnostic)
+			}
 			t.Fatalf("installed %v: exit %d %s", args, status, diag)
 		}
 		return out
@@ -312,6 +325,57 @@ func Contract(r io.Reader){_,_=r.Read(nil)}
 	success("skill", "install")
 	if !reflect.DeepEqual(before, snapshot(t, dir)) {
 		t.Fatal("fresh analysis changed source")
+	}
+}
+
+// installedGoProbeDiagnostic reports only probe context, never the full inherited
+// environment. URLs (including userinfo/query credentials) are omitted entirely.
+func installedGoProbeDiagnostic(cmd *exec.Cmd) (string, error) {
+	redact := regexp.MustCompile(`[A-Za-z][A-Za-z0-9+.-]*://[^\s"'<>]+`)
+	safe := func(s string) string { return redact.ReplaceAllString(s, "[redacted URL]") }
+	_, err := cmd.Output()
+	var stderr []byte
+	var exit *exec.ExitError
+	if errors.As(err, &exit) {
+		stderr = exit.Stderr
+	}
+	context := map[string]string{}
+	for _, key := range []string{"PATH", "HOME", "GOROOT", "SYSTEMROOT", "GOENV", "GOTOOLCHAIN", "GOFLAGS", "GOWORK", "GOPROXY", "GOSUMDB", "GOTELEMETRY"} {
+		for _, entry := range cmd.Environ() {
+			name, value, ok := strings.Cut(entry, "=")
+			if ok && strings.EqualFold(name, key) {
+				context[key] = safe(value)
+			}
+		}
+	}
+	args := slices.Clone(cmd.Args)
+	for i := range args {
+		args[i] = safe(args[i])
+	}
+	environment, _ := json.Marshal(context)
+	return fmt.Sprintf("isolated Go probe: argv=%q cwd=%q environment=%s error=%s stderr=%q", args, safe(cmd.Dir), environment, safe(fmt.Sprint(err)), safe(string(stderr))), err
+}
+
+func TestInstalledGoProbeDiagnostic(t *testing.T) {
+	// A real child exit exercises Output's ExitError/Stderr behavior without a
+	// shell, fake Go implementation, or any dependency on a Windows runtime.
+	cmd := exec.Command(executable, "-https://alice:secret@example.test/private?token=secret")
+	cmd.Dir = t.TempDir()
+	cmd.Env = append(os.Environ(), "GOPROXY=https://alice:secret@example.test/private?token=secret", "SIDEFX_UNRELATED_SECRET=do-not-print")
+	diagnostic, err := installedGoProbeDiagnostic(cmd)
+	var exit *exec.ExitError
+	if !errors.As(err, &exit) || exit.ExitCode() != 2 {
+		t.Fatalf("probe exit identity: %v", err)
+	}
+	for _, want := range []string{"exit status 2", "flag provided but not defined", "[redacted URL]", "cwd=", `"GOPROXY":`} {
+		if !strings.Contains(diagnostic, want) {
+			t.Fatalf("missing %q in %s", want, diagnostic)
+		}
+	}
+	for _, secret := range []string{"alice", "secret", "token=", "SIDEFX_UNRELATED_SECRET", "do-not-print"} {
+		if strings.Contains(diagnostic, secret) {
+			t.Fatalf("unsafe probe diagnostic: %s", diagnostic)
+		}
 	}
 }
 

@@ -3,6 +3,7 @@ package skillinstall
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 )
 
@@ -19,8 +20,20 @@ func TestInstallCreatesAndUpdatesManagedSkill(t *testing.T) {
 	if err != nil || string(data) != "first\n" {
 		t.Fatalf("installed content: %q, %v", data, err)
 	}
-	if mode, err := os.Stat(first.Path); err != nil || mode.Mode().Perm() != 0644 {
-		t.Fatalf("skill permissions: %v, %v", mode, err)
+	mode, err := os.Stat(first.Path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !mode.Mode().IsRegular() {
+		t.Fatalf("skill is not a regular file: %v", mode.Mode())
+	}
+	if runtime.GOOS == "windows" {
+		// Windows exposes the read-only attribute, not Unix permission bits.
+		if mode.Mode().Perm()&0200 == 0 {
+			t.Fatalf("skill is read-only: %v", mode.Mode())
+		}
+	} else if mode.Mode().Perm() != 0644 {
+		t.Fatalf("skill permissions: %v", mode.Mode())
 	}
 	second, err := Install(Config{Home: home, Name: "sidefx", Content: []byte("second\n")})
 	if err != nil || !second.Updated {

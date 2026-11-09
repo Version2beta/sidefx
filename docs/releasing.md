@@ -47,6 +47,28 @@ A VCS revision alone does not identify uncommitted content. Repeat the build and
 compare hashes under identical inputs if claiming local byte reproducibility;
 this does not establish reproducibility across toolchains or hosts.
 
+### Eventual alpha metadata (owner-authorized only)
+
+Use Go's supported tag-derived module build metadata rather than adding an
+application version flag or injecting a proposed release name. For the root
+module, the eventual tag is `v0.1.0-alpha.1` (not `cmd/sidefx/v0.1.0-alpha.1`).
+Only after the owner approves a committed, validated revision, create that real
+tag on that exact revision and build from its clean checkout using the command
+above, with output outside the checkout. Verify `go version -m` reports module
+`github.com/Version2beta/sidefx` at `v0.1.0-alpha.1`, the approved `vcs.revision`,
+and `vcs.modified=false`. Retain fresh executable and archive checksums for
+approval; earlier untagged binaries are not interchangeable with that build.
+Creating/pushing the commit or tag, running remote CI and publishing each require
+separate owner authorization; these instructions do not perform those actions.
+
+The VCS-aware local build mechanism is verified with Go 1.27.2; check actual
+metadata with the selected release toolchain, including Go 1.26 if used. An
+untagged checkout can report a pseudo-version; uncommitted edits add `+dirty`
+and `vcs.modified=true`. A source extraction without Git metadata can report
+`(devel)`. None of these is an assigned alpha version. Application help is not a
+version interface, and an injected label would not establish a real module tag
+or clean source provenance.
+
 ## Validate the distributable, then obtain publication approval
 
 - Stage the **new** executable in a private temporary directory, with isolated

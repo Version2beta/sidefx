@@ -9,7 +9,7 @@ import (
 
 func TestCallEdgesExposeGoroutineAndDeferredInvocationKinds(t *testing.T) {
 	dir := t.TempDir()
-	mustWrite(t, filepath.Join(dir, "go.mod"), "module example.com/asyncedges\n\ngo 1.27\n")
+	mustWrite(t, filepath.Join(dir, "go.mod"), "module example.com/asyncedges\n\ngo 1.26\n")
 	mustWrite(t, filepath.Join(dir, "async.go"), `package asyncedges
 import "os"
 
