@@ -47,6 +47,21 @@ func TestInstalledIndexOutsideCheckout(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	// A trimmed Go binary may have no compiled-in root. Resolve its real root
+	// before moving its entry point onto the isolated PATH.
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	rootProbe := exec.CommandContext(ctx, goPath, "env", "GOROOT")
+	rootProbe.Env = append(os.Environ(), "GOTOOLCHAIN=local")
+	rootOutput, err := rootProbe.Output()
+	cancel()
+	if err != nil {
+		t.Fatalf("resolve host GOROOT before isolation: %v", err)
+	}
+	goRoot := strings.TrimSpace(string(rootOutput))
+	toolDir, err := os.Stat(filepath.Join(goRoot, "pkg", "tool"))
+	if !filepath.IsAbs(goRoot) || err != nil || !toolDir.IsDir() {
+		t.Fatalf("invalid host GOROOT %q: %v", goRoot, err)
+	}
 	goCopy := filepath.Join(bin, "go"+suffix)
 	if err = os.Symlink(goPath, goCopy); err != nil {
 		t.Skipf("isolated Go PATH symlink unavailable: %v", err)
@@ -79,7 +94,7 @@ func Contract(r io.Reader){_,_=r.Read(nil)}
 	before := snapshot(t, dir)
 	// Child PATH contains exactly the copied installed binary and Go, no Python,
 	// shell utilities, repository helper or checkout-relative command.
-	env := append(os.Environ(), "PATH="+bin, "HOME="+home, "GOWORK=off", "GOPROXY=off", "GOSUMDB=off", "GOTOOLCHAIN=local", "GOFLAGS=-mod=readonly", "GOTELEMETRY=off")
+	env := append(os.Environ(), "PATH="+bin, "GOROOT="+goRoot, "HOME="+home, "USERPROFILE="+home, "GOWORK=off", "GOPROXY=off", "GOSUMDB=off", "GOTOOLCHAIN=local", "GOFLAGS=-mod=readonly", "GOTELEMETRY=off")
 	call := func(args ...string) ([]byte, []byte, int) {
 		t.Helper()
 		cmd := exec.Command(binary, args...)

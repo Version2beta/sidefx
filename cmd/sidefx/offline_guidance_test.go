@@ -46,7 +46,8 @@ func TestAcquisitionDoesNotRecordProxyCredentials(t *testing.T) {
 
 func TestInstalledIndexOfflineGuidanceBeforeLoading(t *testing.T) {
 	home := t.TempDir()
-	if _, diag, status := invoke(t, fixtureSource, []string{"HOME=" + home}, "skill", "install"); status != 0 {
+	// Keep both os.UserHomeDir platform selectors inside this test's home.
+	if _, diag, status := invoke(t, fixtureSource, []string{"HOME=" + home, "USERPROFILE=" + home}, "skill", "install"); status != 0 {
 		t.Fatal(diag)
 	}
 	installed, err := os.ReadFile(filepath.Join(home, ".agents", "skills", "sidefx", "SKILL.md"))

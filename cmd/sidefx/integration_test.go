@@ -375,7 +375,9 @@ func TestSSAConcurrencySites(t *testing.T) {
 
 func TestSkillInstallCLI(t *testing.T) {
 	home := t.TempDir()
-	out, diagnostic, status := invoke(t, fixtureSource, []string{"HOME=" + home}, "skill", "install")
+	// os.UserHomeDir uses HOME on Unix and USERPROFILE on Windows.
+	env := []string{"HOME=" + home, "USERPROFILE=" + home}
+	out, diagnostic, status := invoke(t, fixtureSource, env, "skill", "install")
 	if status != 0 || diagnostic != "" || !strings.Contains(out, "Installed skill:") {
 		t.Fatalf("install: stdout %q stderr %q exit %d", out, diagnostic, status)
 	}
@@ -387,7 +389,7 @@ func TestSkillInstallCLI(t *testing.T) {
 	if err != nil || !bytes.Equal(installed, canonical) {
 		t.Fatalf("skill content mismatch: %v", err)
 	}
-	out, diagnostic, status = invoke(t, fixtureSource, []string{"HOME=" + home}, "skill", "install")
+	out, diagnostic, status = invoke(t, fixtureSource, env, "skill", "install")
 	if status != 0 || diagnostic != "" || !strings.Contains(out, "Skill is current:") {
 		t.Fatalf("repeat install: stdout %q stderr %q exit %d", out, diagnostic, status)
 	}

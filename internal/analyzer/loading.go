@@ -33,6 +33,16 @@ func loadConfig(opts Options) (*packages.Config, func(), error) {
 	if env.GOWORK == "" || env.GOWORK == "off" {
 		return cfg, noop, nil
 	}
+	// Workspace roots below are canonicalized. Use the same spelling for the
+	// Go subprocess's cwd: go list compares module roots lexically, including
+	// Windows short/long names and Unix directory symlink aliases.
+	dir, err := filepath.Abs(opts.Dir)
+	if err != nil {
+		return nil, nil, err
+	}
+	if physical, err := filepath.EvalSymlinks(dir); err == nil {
+		cfg.Dir = physical
+	}
 	data, err = os.ReadFile(env.GOWORK)
 	if err != nil {
 		return nil, nil, err
