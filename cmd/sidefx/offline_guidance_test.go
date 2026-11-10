@@ -54,7 +54,8 @@ func TestInstalledIndexOfflineGuidanceBeforeLoading(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	text := string(installed)
+	// Markdown fences are independent of checkout line endings; installed bytes stay unchanged.
+	text := strings.ReplaceAll(string(installed), "\r\n", "\n")
 	start := strings.Index(text, "```sh\n")
 	if start < 0 {
 		t.Fatal("missing offline setup block")
