@@ -38,9 +38,10 @@ and external test-file functions.
 
 ## Optional agent skill
 
-The canonical [`skills/sidefx/SKILL.md`](skills/sidefx/SKILL.md) is a short,
-guide to complete category orientation, small prospective lead selection,
-focused retrieval, bounded behavioral follow-through and local contract checks.
+The canonical [`skills/sidefx/SKILL.md`](skills/sidefx/SKILL.md) supports both
+focused questions (without a complete category survey) and broad discovery (with
+complete category orientation), followed by bounded behavioral follow-through
+and local contract checks.
 For one Pi session without installation or settings changes, use
 `pi --no-skills --skill /absolute/path/to/sidefx/skills/sidefx/SKILL.md`,
 then `/skill:sidefx` with your question and package scope.

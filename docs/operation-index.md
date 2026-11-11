@@ -35,17 +35,24 @@ label can be reached from a particular caller only via a candidate edge; the pro
 does **not** upgrade that path. Reverse source resolution, candidate flags, generic
 variants, contracts and uncertainty are copied, not inferred.
 
-## Phase A: acquire and read the entire category index
+## Route selection and Phase A: broad category orientation
 
 First establish target/source/producer identities, dirty source manifest, allowed
-reads/writes/runtime actions, explicit package/build scope and budgets. Prefer
-qualified cached JSON: projection and pagination require **no additional SSA**.
-Legacy JSON without recorded command/build provenance has a complete emitted-record
-index, **not an established complete selected-scope orientation**. Full JSON on disk
-is not model exposure. Record every category ID and coverage/bounds as presented;
-do not put all operation records in model context.
+reads/writes/runtime actions, explicit package/build scope and budgets. For a focused
+question or directed lead, use the relevant narrow CLI query; complete category
+orientation is not required. Record that no category survey was performed, and do
+not infer category-wide coverage or absence from the focused result. Preserve the
+same scope, caller/candidate, uncertainty, truncation and provenance limits. The
+canonical skill describes focused query forms and interpretation.
 
-### Fresh acquisition with the installed binary
+For broad prospective discovery, complete the category orientation before selecting
+leads. Prefer qualified cached JSON: projection and pagination require **no
+additional SSA**. Legacy JSON without recorded command/build provenance has a
+complete emitted-record index, **not an established complete selected-scope
+orientation**. Full JSON on disk is not model exposure. Record every category ID
+and coverage/bounds as presented; do not put all operation records in model context.
+
+### Broad-discovery acquisition with the installed binary
 
 First locate the executable: `command -v sidefx`. If absent, stop and obtain an
 authorized installed executable; skill installation does not install the binary.
@@ -188,10 +195,11 @@ parity oracle, not the installed validator's malformed-input authority.
 
 ## Phase B: small prospective selection and focused retrieval
 
-Read **every index category ID and its bounds**, not every site. Choose a small
-prospective portfolio across the index by consequential local obligations and
-tractable evidence, not frequency/rank/importance by count. Record one alternative
-lead. Consult only relevant parts of the supplied identity-qualified **full 59-family
+For the broad-discovery route, read **every index category ID and its bounds**,
+not every site. Choose a small prospective portfolio across the index by
+consequential local obligations and tractable evidence, not frequency/rank/importance
+by count. Record one alternative lead. Consult only relevant parts of the supplied
+identity-qualified **full 59-family
 reference**, not a regenerated catalog or exhaustive checklist. If the required
 reference/authority is unavailable, stop for it. An index is an orientation aid,
 not a category investigation quota.

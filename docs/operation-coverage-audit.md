@@ -133,7 +133,9 @@ bounded retrieval. It exposes all present exact labels with distinct-ID counts,
 explicit overlap and possible/origin/uncertainty distinctions. It does not change
 this 59-family reference, recognize new operations or remove any deferred gap.
 Absent categories are not recognized-zero: the effect schema has no full registry.
-`-all` does not bypass site/edge limits. Canonical guidance now reads every category
-ID/bounds before small prospective selection and bounded local contract reasoning,
-not every site or every family. Source availability, model exposure and actual
-investigation remain separate; no new effectiveness evaluation is asserted.
+`-all` does not bypass site/edge limits. Broad-discovery guidance reads every
+category ID/bounds before small prospective selection and bounded local contract
+reasoning; focused questions may skip the category survey and record that limit.
+Neither route requires reading every site or family. Source availability, model
+exposure and actual investigation remain separate; no new effectiveness evaluation
+is asserted.

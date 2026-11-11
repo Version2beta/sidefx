@@ -54,12 +54,34 @@ Dependency listing is not type checking: sidefx must also load successfully.
 Loading errors invalidate the requested analysis, not establish zero effects;
 report the blocker rather than silently narrowing scope or repairing modules.
 
-## A — Complete category orientation before selection
+## A — Choose the route before selecting evidence
 
 Establish authority, target/dirty-source and producer identities, package/build
-scope and query/source-reading/reporting budgets first. Prefer qualified saved
-effect-view JSON; keep full records outside context. The installed CLI alone does
-complete native indexing, without a skill, Python, checkout, Go or additional SSA:
+scope and query/source-reading/reporting budgets. Use qualified saved effect-view
+JSON when it already answers the question; otherwise start with a focused query.
+Keep full records outside context. Choose one route based on the request:
+
+- **Directed investigation:** use this route when the user supplies a concrete
+  function, operation/API/site/category, caller or boundary, lifecycle/error
+  question, or hypothesis. A package/category mention alone does not make an
+  open-ended request to discover risks or improvements directed. Start with a
+  relevant focused sidefx CLI query, without first acquiring/indexing all
+  categories or reading a saved full index. Use the narrowest explicit package
+  scope that contains the target; widen only to answer an identified evidence gap.
+  Record when no category survey was performed; do not infer category-wide
+  coverage or absence from focused results. Keep source, binary, scope,
+  caller/candidate, uncertainty, truncation and provenance limits explicit.
+- **Open-ended discovery:** use this route when asked to discover consequential
+  operations, risks or opportunities without a specific behavior question/target.
+  Complete category orientation within the declared scope before selecting leads.
+  Do not substitute a shortlist or focused query for that survey.
+
+### Broad discovery: complete category orientation
+
+The following acquisition/indexing and prospective-selection steps are for
+open-ended discovery. They are not prerequisites for the directed route above.
+The installed CLI alone does complete native indexing, without a skill, Python,
+checkout, Go or additional SSA:
 
 ```sh
 sidefx index -provenance "$EVIDENCE/acquisition.json" "$EVIDENCE/effects.json"
@@ -88,8 +110,9 @@ category loss. `acquire` is unfiltered recognized-operation acquisition; normal
 CLI retains filters/contracts/unresolved queries, and recognized reports do not
 contain a complete unresolved inventory.
 
-Read **EVERY exact category ID plus coverage/bounds in the index**, not all sites.
-The native index includes all labels present in emitted established or possible site
+For broad prospective discovery, read **EVERY exact category ID plus
+coverage/bounds in the index**, not all sites. The native index includes all labels
+present in emitted established or possible site
 fields once, including singletons, without samples or category/frequency caps.
 Counts are distinct canonical site IDs per category; multi-effect membership
 **overlaps** across categories. Origin selected/dependency/unknown counts come
@@ -106,18 +129,26 @@ legacy/filter/capped JSON cannot silently become complete selected-scope coverag
 Retain analysis budgets, scope exclusions and graph depth/edge/site bounds.
 The index is not a risk score, absence proof or exhaustive mutation inventory.
 
-## B — Select a small prospective portfolio, then retrieve
+## B — Select a lead and retrieve evidence
 
-Across the whole index choose a few consequential, locally tractable obligations,
-not the largest counts or familiar categories. Keep one reasoned alternative lead.
-Consult relevant portions of the installed identity-qualified full [59-family
-coverage reference](references/operation-coverage-audit.md) and [recognition decisions](references/operation-recognition-decisions.md); do not regenerate it or sweep it
-as a checklist. If required authority/reference inputs are absent, stop for them.
-Before source reading record site/API/category/location and uncertainty, why it
-matters, provisional obligation, falsifier, strongest protective explanation,
-minimum next evidence and stopping bound. No finding quota.
+For open-ended discovery, choose a few consequential, locally tractable leads
+across the oriented index, not the largest counts or familiar categories. Keep one
+reasoned alternative lead. Consult relevant portions of the installed
+identity-qualified full [59-family coverage reference](references/operation-coverage-audit.md)
+and [recognition decisions](references/operation-recognition-decisions.md); do not
+regenerate it or sweep it as a checklist. If required authority/reference inputs
+are absent, stop for them. Before retrieval, record each lead's provisional
+category or behavior question, why it matters, obligation, falsifier, strongest
+protective explanation and stopping bound. No finding quota.
 
-Retrieve an **exact** category or canonical ID in small deterministic pages:
+For a directed investigation, use the question's named target as the lead; no
+portfolio, alternative lead or complete index is required. In either route, keep
+the next evidence question and stopping bound explicit.
+
+For each broad-discovery lead, retrieve a focused operation/site record and the
+relevant caller context before opening source bodies; category counts alone are not
+a substitute. When using a saved index, retrieve an **exact** category or
+canonical ID in small deterministic pages:
 
 ```sh
 sidefx index -category fs.write -limit 8 "$EVIDENCE/effects.json"
@@ -133,7 +164,9 @@ means corresponding sites in that saved input. Pages retain original sites, APIs
 operations/evidence, reverse nodes/edges/contracts and caller uncertainty. Saved
 retrieval reparses JSON without SSA. Site count is bounded (1–100/page), not graph
 bytes; graphs retain original limits. Missing caller context needs an authorized
-focused query, which reloads analysis.
+focused query, which reloads analysis. Before source reading, record the returned
+site/API/location, caller resolution, uncertainty and truncation; keep unknowns
+explicit.
 
 ### Focused CLI queries
 
@@ -154,13 +187,15 @@ sidefx -unresolved -reason interface_dispatch -max-depth 2 -max-sites 20 -max-ed
 sidefx -contracts -unresolved -reason interface_dispatch -operation '.Save' -max-depth 2 -max-sites 20 -max-edges 50 -json ./...
 ```
 
-Start with consequential categories → direct operation sites → source locations
-and reverse callers. `-effect` matches category substrings (`fs.rename` and
-`resource.release` are distinct from `fs.write`); `-api` is exact, `-operation`
-is API-substring search. Copy a canonical ID into `-site ID` to expand one site;
-keep `-unresolved` for an unresolved-only site. IDs survive filtering, not source
-location changes. Multiple callers can share one direct site; independent calls
-to the same API remain separate sites. Multi-category sites are not duplicates.
+Broad discovery proceeds from category orientation to prospective operation
+sites, source locations and callers. A directed investigation starts at the
+question's named target. In either route, `-effect` matches category substrings
+(`fs.rename` and `resource.release` are distinct from `fs.write`); `-api` is exact,
+`-operation` is API-substring search. Copy a canonical ID into `-site ID` to
+expand one site; keep `-unresolved` for an unresolved-only site. IDs survive
+filtering, not source location changes. Multiple callers can share one direct
+site; independent calls to the same API remain separate sites. Multi-category
+sites are not duplicates.
 
 Depth 0 shows origins; 1 adds immediate callers. `-max-sites` and `-max-edges`
 bound output, not loading cost. Check report and per-site `truncated` flags;

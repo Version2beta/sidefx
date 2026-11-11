@@ -28,11 +28,34 @@ checkout is authorized, use `go build -o <evidence>/sidefx ./cmd/sidefx`
 there, recording environment, stdout/stderr and exit status. Do not build from
 an arbitrary target module or assume a preinstalled binary matches source.
 
-### Complete operation orientation before choosing functions
+### Choose directed investigation or broad discovery
 
-For operation-supported investigation, first obtain a **complete category index**
-for the declared analysis scope, using qualified saved effect-view JSON when
-available. The installed `sidefx index REPORT.json` indexes every present
+A concrete target can be a specific function, operation/API/site/category, caller
+or boundary, lifecycle/error path, or hypothesis. Merely naming a package or
+category while asking to discover risks or improvements remains open-ended.
+
+For a **focused question or directed lead**, start with one narrow
+**sidefx query** for the named target. Use `-view functions -function` for a named
+function, or the canonical guide's focused effect-view selectors for an
+operation/category/API/site/caller/boundary question. For example, a Close/error
+question may start with `-effect resource.release` or an exact Close API query,
+then follow the reported operation/callers into source; `-help` or source search
+alone is not that analysis query. Use the narrowest explicit package scope that
+contains the target; widen only to answer an identified evidence gap. Do not
+require complete category orientation, a saved index, or a full function
+inventory first. Record when no category survey was performed and do not infer
+category-wide coverage or absence from focused results. Keep source/binary/scope
+identity, caller/candidate resolution, uncertainty, truncation and provenance
+limits explicit. Then inspect source, the governing contract and counterevidence. If
+later evidence reveals a gap, broaden only as needed and state why.
+
+The canonical `skills/sidefx/SKILL.md` and
+[operation-index reference](../../../docs/operation-index.md) define shared operation
+queries and evidence interpretation; use them rather than creating a second workflow.
+
+For **broad prospective function discovery**, obtain a **complete category index**
+for the declared analysis scope before choosing functions, using qualified saved
+effect-view JSON when available. The installed `sidefx index REPORT.json` indexes every present
 established/possible category once with distinct site/origin/uncertainty counts
 and explicit overlap/bounds. No Python, checkout, skills or additional SSA is
 required for indexing. `compact.py` below is optional function reduction only,
@@ -42,6 +65,10 @@ verified absolute path for every command. Skill installation does not install
 an executable. Read EVERY category ID and coverage before prospective selection.
 Do not substitute an ad hoc ten-category or first-24 reducer.
 
+#### Broad route: acquisition and function selection
+
+The following fresh-acquisition, portfolio and function-summary steps apply to
+broad discovery. A directed question may use its narrow query without these steps.
 For native fresh acquisition, from the target cwd use
 `sidefx acquire -out "$EVIDENCE" -direct -max-depth 0 -max-sites 100000 -max-edges 1 ./...`
 only with authority, Go on PATH and EVIDENCE a new nonexistent run-directory path.
@@ -67,10 +94,11 @@ not function direct/inherited marks. Possible-only labels remain separate from
 established origin labels and candidate caller paths; unresolved-view records can
 overlap possible labels, while truly uncategorized unresolved sites stay separate.
 
-Choose a small prospective portfolio across the index, consulting only relevant
-parts of the supplied identity-qualified full 59-family reference; keep one
-alternative. No importance ranking by counts, architecture sweep, independent
-vulnerability brainstorm or family quota. Retrieve exact category/ID pages with
+For broad discovery, choose a small prospective portfolio across the oriented
+index, consulting only relevant parts of the supplied identity-qualified full
+59-family reference; keep one alternative. No importance ranking by counts,
+architecture sweep, independent vulnerability brainstorm or family quota. Retrieve
+exact category/ID pages with
 `sidefx index -category ID -limit 8 REPORT.json` or
 `sidefx index -site ID REPORT.json`; follow `next_cursor` using `-cursor TOKEN`
 with the same selector to null for full sets (or `-offset` plus `-expect-sha256`).
@@ -79,7 +107,7 @@ reparses saved JSON without SSA, and does not restore missing caller depth/edges
 An additional CLI site/caller query reloads analysis. Never promote candidate
 callers to established reachability merely because an origin effect is established.
 
-Then, from the target module/workspace, obtain the actual function view as needed
+For broad discovery, obtain the target module/workspace's function view as needed
 for the prospective caller/function choice (it is not a site/category index):
 
 ```sh
@@ -112,9 +140,11 @@ status even when analysis fails. Check successful loading and selected package,
 module and build coverage in stats; independently record provenance that stats
 cannot provide. Static loading does not execute the target's initializers.
 
-## 2. Reduce without losing evidence distinctions
+## 2. Broad discovery: reduce without losing evidence distinctions
 
-Use programmatic reduction, not a giant model dump. Optional stdlib helper
+This reduction step serves broad prospective function discovery. A focused
+investigation may skip it unless a specific unanswered question needs a function
+summary. Use programmatic reduction, not a giant model dump. Optional stdlib helper
 (relative to this skill directory):
 
 ```sh

@@ -72,9 +72,11 @@ limits. `-all` remains function inventory, not unlimited origins. Every emitted
 site category is indexed once without sampling; complete declared-query orientation
 additionally needs recorded unfiltered acquisition provenance and verified no site
 loss. Legacy/filter/capped/unknown inputs are labeled honestly. Exact-category/ID
-pagination preserves original effect/evidence and caller uncertainty. The canonical
-and function-first skills now require complete category orientation followed by a
-small prospective portfolio, bounded behavioral follow-through and local contract
-verification; installed/home copies remain untouched. This supersedes only the
+pagination preserves original effect/evidence and caller uncertainty. The
+canonical and function-first skills support focused-question routes that skip
+complete category orientation while recording survey limitations, and broad
+prospective-discovery routes that require complete orientation before selection.
+Both preserve bounded behavioral follow-through and local contract verification;
+installed/home copies remain untouched. This supersedes only the
 prior statement that no new workflow was imposed, not the historical recognition
 validation or any of its limits. No detection-effectiveness claim follows.
